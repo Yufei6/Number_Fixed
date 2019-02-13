@@ -49,7 +49,7 @@ namespace fp {
         }
 
         template<std::size_t OtherInt, std::size_t OtherFrac>fixed(const fixed<OtherInt, OtherFrac> &other);
-
+        
 /*
 * copy  assignment
 */
@@ -92,26 +92,37 @@ namespace fp {
 
         fixed &operator*=(double other);
 
-        template
-                <std::size_t OtherInt, std::size_t OtherFrac>fixed &operator*=(const fixed<OtherInt, OtherFrac> &other);
+        template <std::size_t OtherInt, std::size_t OtherFrac>fixed &operator*=(const fixed<OtherInt, OtherFrac> &other){
+            this->value = this->value / other->value;
+            return *this;
+        }
 
-        fixed &operator/=(const fixed &other);
+        fixed &operator/=(const fixed &other){
+            this->value = this->value / other->value;
+            return *this;
+        }
 
-        fixed &operator/=(float other);
+        fixed &operator/=(float other){
+            this->value = this->value / fixed<Int , Frac>(other).value;
+            return *this;
+        }
 
-        fixed &operator/=(double other);
+        fixed &operator/=(double other){
+            this->value = this->value / fixed<Int , Frac>(other).value;
+            return *this;
+        }
 
         template <std::size_t OtherInt, std::size_t OtherFrac>
         fixed &operator/=(const fixed<OtherInt, OtherFrac> &other){
-
+            this->value = this->value / other->value;
+            return *this;
         }
     };
 
 /*
 * arithmetic  operators
 */
-    template
-            <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>double operator+(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
+    template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>double operator+(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
 
     template
             <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>double operator-(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
