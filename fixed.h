@@ -48,15 +48,16 @@ namespace fp {
             value = other.value;
         }
 
-        template<std::size_t OtherInt, std::size_t OtherFrac>fixed(const fixed<OtherInt, OtherFrac> &other);
+        template <std::size_t OtherInt, std::size_t OtherFrac>
+        fixed(const fixed<OtherInt, OtherFrac> &other);
         
 /*
 * copy  assignment
 */
         fixed &operator=(const fixed &other);
 
-        template
-                <std::size_t OtherInt, std::size_t OtherFrac>fixed &operator=(const fixed<OtherInt, OtherFrac> &other);
+        template <std::size_t OtherInt, std::size_t OtherFrac>
+        fixed &operator=(const fixed<OtherInt, OtherFrac> &other);
 
 /*
 * conversions
@@ -74,8 +75,8 @@ namespace fp {
 
         fixed &operator+=(double other);
 
-        template
-                <std::size_t OtherInt, std::size_t OtherFrac>fixed &operator+=(const fixed<OtherInt, OtherFrac> &other);
+        template <std::size_t OtherInt, std::size_t OtherFrac>
+        fixed &operator+=(const fixed<OtherInt, OtherFrac> &other);
 
         fixed &operator-=(const fixed &other);
 
@@ -83,8 +84,8 @@ namespace fp {
 
         fixed &operator-=(double other);
 
-        template
-                <std::size_t OtherInt, std::size_t OtherFrac>fixed &operator-=(const fixed<OtherInt, OtherFrac> &other);
+        template <std::size_t OtherInt, std::size_t OtherFrac>
+        fixed &operator-=(const fixed<OtherInt, OtherFrac> &other);
 
         fixed &operator*=(const fixed &other);
 
@@ -92,7 +93,8 @@ namespace fp {
 
         fixed &operator*=(double other);
 
-        template <std::size_t OtherInt, std::size_t OtherFrac>fixed &operator*=(const fixed<OtherInt, OtherFrac> &other){
+        template <std::size_t OtherInt, std::size_t OtherFrac>
+        fixed &operator*=(const fixed<OtherInt, OtherFrac> &other){
             this->value = this->value / other->value;
             return *this;
         }
@@ -122,34 +124,35 @@ namespace fp {
 /*
 * arithmetic  operators
 */
-    template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>double operator+(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
+    template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
+    double operator+(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
 
-    template
-            <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>double operator-(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
+    template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
+    double operator-(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
 
-    template
-            <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>double operator*(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
+    template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
+    double operator*(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
 
-    template
-            <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>double operator/(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
+    template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
+    double operator/(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
 
 /*
 * comparison  operators
 */
-    template
-            <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>bool operator==(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
+    template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
+    bool operator==(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
 
-    template
-            <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>bool operator<(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
+    template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
+    bool operator<(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
 
-    template
-            <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>bool operator>(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
+    template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
+    bool operator>(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
 
-    template
-            <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>bool operator<=(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
+    template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
+    bool operator<=(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
 
-    template
-            <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>bool operator>=(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
+    template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
+    bool operator>=(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
 /*
 * types
 */
@@ -160,10 +163,7 @@ namespace fp {
 /*
 * traits
 */
-    template
-            <
-                    typename
-                    Fixed>
+    template<typename Fixed>
     struct
     fixed_traits {
         static constexpr Fixed lowest();
@@ -182,22 +182,13 @@ namespace fp {
 /*
 * functions
 */
-    template
-            <
-                    typename
-                    Fixed>
+    template<typename Fixed>
     Fixed sqrt(Fixed f);
 
-    template
-            <
-                    typename
-                    Fixed>
+    template<typename Fixed>
     std::string to_string(Fixed f);
 
-    template
-            <
-                    typename
-                    Fixed>
+    template<typename Fixed>
     std::ostream &operator<<(std::ostream &os, Fixed f);
 }
 
