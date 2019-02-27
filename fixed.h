@@ -68,20 +68,30 @@ namespace fp {
 /*
 * copy  constructors
 */
-        fixed(const fixed &other){
-            value = other.value;
+        fixed(const fixed &other)
+        : value(other.value){
         }
 
         template <std::size_t OtherInt, std::size_t OtherFrac>
-        fixed(const fixed<OtherInt, OtherFrac> &other);
+        fixed(const fixed<OtherInt, OtherFrac> &other)
+        : value(other.value){ 
+        if (OtherFrac-Frac > 0)
+            value = value << (OtherFrac-Frac);
+        if (Frac-OtherFrac > 0)
+            value = value >> (Frac-OtherFrac);
+        }
         
 /*
 * copy  assignment
 */
-        fixed &operator=(const fixed &other);
+        fixed &operator=(const fixed &other){
+            return fixed<other.integer_part,other.fractional_part>(other.value);
+        }
 
         template <std::size_t OtherInt, std::size_t OtherFrac>
-        fixed &operator=(const fixed<OtherInt, OtherFrac> &other);
+        fixed &operator=(const fixed<OtherInt, OtherFrac> &other){
+            return fixed<other.integer_part,other.fractional_part>(other.value);
+        }
 
 /*
 * conversions
