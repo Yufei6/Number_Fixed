@@ -31,14 +31,38 @@ namespace fp {
         */
         fixed() = default;
 
-        constexpr explicit fixed(float x)
-        : value(x/pow(2,integer_part-1)<1? static_cast<underlying_type>(round(x*pow(2,fractional_part))) : throw std::overflow_error("Can't do that")){
-
+        constexpr explicit fixed(float x){
+            if(x>0){
+                if(x/pow(2,integer_part)<1){
+                    value=static_cast<underlying_type>(floor(x*pow(2,fractional_part)));
+                }else{
+                    throw std::overflow_error("This number is too big");
+                }
+            }else{
+                if(x/-pow(2,integer_part)<1){
+                    value=static_cast<underlying_type>(ceil(x*pow(2,fractional_part)));
+                }else{
+                    throw std::overflow_error("This number is too small");
+                }
+            }
         }
+        
 
-        constexpr explicit fixed(double x)
-        : value(x/pow(2,integer_part-1)<1? static_cast<underlying_type>(round(x*pow(2,fractional_part))) : throw std::overflow_error("Can't do that")){
-            
+
+        constexpr explicit fixed(double x){
+            if(x>0){
+                if(x/pow(2,integer_part)<1){
+                    value=static_cast<underlying_type>(floor(x*pow(2,fractional_part)));
+                }else{
+                    throw std::overflow_error("This number is too big");
+                }
+            }else{
+                if(x/-pow(2,integer_part)<1){
+                    value=static_cast<underlying_type>(ceil(x*pow(2,fractional_part)));
+                }else{
+                    throw std::overflow_error("This number is too small");
+                }
+            }
         }
 
 /*
@@ -157,7 +181,10 @@ namespace fp {
 * arithmetic  operators
 */
     template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
-    double operator+(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
+    double operator+(fixed<I1, F1> lhs, fixed<I2, F2> rhs){
+        double res=0;
+        return res;
+    }
 
     template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
     double operator-(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
