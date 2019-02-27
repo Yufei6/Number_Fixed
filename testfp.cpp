@@ -31,7 +31,9 @@ TEST(fixedTest, constructorDouble){
 
 int main(int argc, char **argv) {
 	fp::fixed<8,8> new_f = fp::fixed<8,8>((float)12.42);
-	std::cout << new_f.value << std::endl;
+	std::cout << std::to_string(new_f.value/(pow(2,new_f.fractional_part))) << std::endl;
     ::testing::InitGoogleTest(&argc, argv);
+    
+    
     return RUN_ALL_TESTS();
 }

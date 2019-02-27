@@ -32,12 +32,12 @@ namespace fp {
         fixed() = default;
 
         constexpr explicit fixed(float x)
-        : value(x/pow(2,integer_part)<1? static_cast<underlying_type>(round(x*pow(2,fractional_part))) : throw std::overflow_error("Can't do that")){
+        : value(x/pow(2,integer_part-1)<1? static_cast<underlying_type>(round(x*pow(2,fractional_part))) : throw std::overflow_error("Can't do that")){
 
         }
 
         constexpr explicit fixed(double x)
-        : value(x/pow(2,integer_part)<1? static_cast<underlying_type>(round(x*pow(2,fractional_part))) : throw std::overflow_error("Can't do that")){
+        : value(x/pow(2,integer_part-1)<1? static_cast<underlying_type>(round(x*pow(2,fractional_part))) : throw std::overflow_error("Can't do that")){
             
         }
 
@@ -69,33 +69,65 @@ namespace fp {
 /*
 * compound  assignment  operators
 */
-        fixed &operator+=(const fixed &other);
+        fixed &operator+=(const fixed &other){
+            this->value = this->value + other->value;
+            return *this;
+        }
 
-        fixed &operator+=(float other);
+        fixed &operator+=(float other){
+            this->value = this->value + fixed<Int,Frac>(other).value;
+            return *this;
+        }
 
-        fixed &operator+=(double other);
+        fixed &operator+=(double other){
+            this->value = this->value + fixed<Int,Frac>(other).value;
+            return *this;
+        }
 
         template <std::size_t OtherInt, std::size_t OtherFrac>
-        fixed &operator+=(const fixed<OtherInt, OtherFrac> &other);
+        fixed &operator+=(const fixed<OtherInt, OtherFrac> &other){
+            this->value = this->value + other->value;
+            return *this;
+        }
 
-        fixed &operator-=(const fixed &other);
+        fixed &operator-=(const fixed &other){
+            this->value = this->value - other->value;
+        }
 
-        fixed &operator-=(float other);
+        fixed &operator-=(float other){
+            this->value = this->value - fixed<Int, Frac>(other).value;
+            return *this;
+        }
 
-        fixed &operator-=(double other);
+        fixed &operator-=(double other){
+            this->value = this->value - fixed<Int, Frac>(other)->value;
+            return *this;
+        }
 
         template <std::size_t OtherInt, std::size_t OtherFrac>
-        fixed &operator-=(const fixed<OtherInt, OtherFrac> &other);
+        fixed &operator-=(const fixed<OtherInt, OtherFrac> &other){
+            this->value = this->value - other->value;
+            return *this;
+        }
 
-        fixed &operator*=(const fixed &other);
+        fixed &operator*=(const fixed &other){
+            this->value = this->value * other->value;
+            return *this;
+        }
 
-        fixed &operator*=(float other);
+        fixed &operator*=(float other){
+            this->value = this->value * fixed<Int,Frac>(other).value;
+            return *this;
+        }
 
-        fixed &operator*=(double other);
+        fixed &operator*=(double other){
+            this->value = this->value * fixed<Int,Frac>(other).value;
+            return *this;
+        }
 
         template <std::size_t OtherInt, std::size_t OtherFrac>
         fixed &operator*=(const fixed<OtherInt, OtherFrac> &other){
-            this->value = this->value / other->value;
+            this->value = this->value * other->value;
             return *this;
         }
 
@@ -140,19 +172,29 @@ namespace fp {
 * comparison  operators
 */
     template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
-    bool operator==(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
+    bool operator==(fixed<I1, F1> lhs, fixed<I2, F2> rhs){
+        return lhs->value == rhs->value;
+    }
 
     template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
-    bool operator<(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
+    bool operator<(fixed<I1, F1> lhs, fixed<I2, F2> rhs){
+        return lhs->value < rhs->value;
+    }
 
     template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
-    bool operator>(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
+    bool operator>(fixed<I1, F1> lhs, fixed<I2, F2> rhs){
+        return lhs->value > rhs->value;
+    }
 
     template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
-    bool operator<=(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
+    bool operator<=(fixed<I1, F1> lhs, fixed<I2, F2> rhs){
+        return lhs->value <= rhs->value;
+    }
 
     template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
-    bool operator>=(fixed<I1, F1> lhs, fixed<I2, F2> rhs);
+    bool operator>=(fixed<I1, F1> lhs, fixed<I2, F2> rhs){
+        return lhs->value >= rhs->value;
+    }
 /*
 * types
 */
@@ -183,10 +225,20 @@ namespace fp {
 * functions
 */
     template<typename Fixed>
-    Fixed sqrt(Fixed f);
+    Fixed sqrt(Fixed f){
+        if(f->value<0){
+            throw std::domain_error("sqrt must use with a positif number");
+        }
+        else{
+            f->value = sqrt(f->value);
+        }
+        return f;
+    }
 
     template<typename Fixed>
-    std::string to_string(Fixed f);
+    std::string to_string(Fixed f){
+        return std::to_string(f->value/(pow(2,f->fractional)));
+    }
 
     template<typename Fixed>
     std::ostream &operator<<(std::ostream &os, Fixed f);
