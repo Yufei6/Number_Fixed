@@ -75,9 +75,9 @@ namespace fp {
         template <std::size_t OtherInt, std::size_t OtherFrac>
         fixed(const fixed<OtherInt, OtherFrac> &other)
         : value(other.value){ 
-        if (OtherFrac-Frac > 0)
+        if (OtherFrac > Frac)
             value = value >> (OtherFrac-Frac);
-        else if (Frac-OtherFrac > 0)
+        else if (Frac > OtherFrac)
             value = value << (Frac - OtherFrac);
         }
         
@@ -104,11 +104,11 @@ namespace fp {
 * conversions
 */
         operator float()const{
-            return (float)(value/(pow(2,fractional_part)));
+            return (float)(this->value/(pow(2,this->fractional_part)));
         }
 
         operator double()const{
-            return (double)(value/(pow(2,fractional_part)));
+            return (double)(this->value/(pow(2,this->fractional_part)));
         }
 
 /*
