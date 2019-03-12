@@ -1,6 +1,6 @@
 //
-// Created by nacelnik on 23/01/19.
-//
+// Augustin BORDY && Yufei LIU
+// Group 1A
 
 #ifndef FIXED_FIXED_H
 #define FIXED_FIXED_H
@@ -33,14 +33,14 @@ namespace fp {
 
         constexpr explicit fixed(float x){
             if(x>0){
-                if(x/pow(2,integer_part)<1){
-                    value=static_cast<underlying_type>(floor(x*pow(2,fractional_part)));
+                if(x/exp2(integer_part)<1){
+                    value=static_cast<underlying_type>(floor(x*exp2(fractional_part)));
                 }else{
                     throw std::overflow_error("This number is too big");
                 }
             }else{
-                if(x/-pow(2,integer_part)<1){
-                    value=static_cast<underlying_type>(ceil(x*pow(2,fractional_part)));
+                if(x/exp2(integer_part)<1){
+                    value=static_cast<underlying_type>(ceil(x*exp2(fractional_part)));
                 }else{
                     throw std::overflow_error("This number is too small");
                 }
@@ -51,14 +51,14 @@ namespace fp {
 
         constexpr explicit fixed(double x){
             if(x>0){
-                if(x/pow(2,integer_part)<1){
-                    value=static_cast<underlying_type>(floor(x*pow(2,fractional_part)));
+                if(x/exp2(integer_part)<1){
+                    value=static_cast<underlying_type>(floor(x*exp2(fractional_part)));
                 }else{
                     throw std::overflow_error("This number is too big");
                 }
             }else{
-                if(x/-pow(2,integer_part)<1){
-                    value=static_cast<underlying_type>(ceil(x*pow(2,fractional_part)));
+                if(x/-exp2(integer_part)<1){
+                    value=static_cast<underlying_type>(ceil(x*exp2(fractional_part)));
                 }else{
                     throw std::overflow_error("This number is too small");
                 }
@@ -76,9 +76,9 @@ namespace fp {
         fixed(const fixed<OtherInt, OtherFrac> &other)
         : value(other.value){ 
         if (OtherFrac > Frac)
-            value = value >> (OtherFrac-Frac);
+            value = value / exp2(OtherFrac-Frac);
         else if (Frac > OtherFrac)
-            value = value << (Frac - OtherFrac);
+            value = value * exp2(Frac - OtherFrac);
         }
         
 /*
@@ -91,11 +91,11 @@ namespace fp {
 
         template <std::size_t OtherInt, std::size_t OtherFrac>
         fixed &operator=(const fixed<OtherInt, OtherFrac> &other){
-            if(OtherFrac - Frac > 0){
-                value = other.value << (OtherFrac-Frac);
+            if(OtherFrac > Frac ){
+                value = other.value / exp2(OtherFrac-Frac);
             }
-            if(Frac - OtherFrac > 0){
-                value = other.value >> (Frac-OtherFrac);
+            if(Frac > OtherFrac ){
+                value = other.value * exp2(Frac-OtherFrac);
             }
             return *this;
         }
@@ -104,18 +104,18 @@ namespace fp {
 * conversions
 */
         operator float()const{
-            return (float)(this->value/(pow(2,this->fractional_part)));
+            return (float)(this->value / (exp2(this->fractional_part)));
         }
 
         operator double()const{
-            return (double)(this->value/(pow(2,this->fractional_part)));
+            return (double)(this->value / (exp2(this->fractional_part)));
         }
 
 /*
 * compound  assignment  operators
 */
         fixed &operator+=(const fixed &other){
-            this->value = this->value + other->value;
+            this->value = this->value + other.value;
             return *this;
         }
 
@@ -131,17 +131,18 @@ namespace fp {
 
         template <std::size_t OtherInt, std::size_t OtherFrac>
         fixed &operator+=(const fixed<OtherInt, OtherFrac> &other){
-            if(OtherFrac - Frac > 0){
-                this->value = this->value + (other->value << (OtherFrac-Frac));
+            if(OtherFrac > Frac ){
+                this->value = this->value + (other.value / exp2(OtherFrac-Frac));
             }
-            if(Frac - OtherFrac > 0){
-                this->value = this->value + (other->value >> (OtherFrac-Frac));
+            if(Frac > OtherFrac){
+                this->value = this->value + (other.value * exp2(Frac-OtherFrac));
             }
             return *this;
         }
 
         fixed &operator-=(const fixed &other){
-            this->value = this->value - other->value;
+            this->value = this->value - other.value;
+            return *this;
         }
 
         fixed &operator-=(float other){
@@ -150,69 +151,69 @@ namespace fp {
         }
 
         fixed &operator-=(double other){
-            this->value = this->value - fixed<Int, Frac>(other)->value;
+            this->value = this->value - fixed<Int, Frac>(other).value;
             return *this;
         }
 
         template <std::size_t OtherInt, std::size_t OtherFrac>
         fixed &operator-=(const fixed<OtherInt, OtherFrac> &other){
-            if(OtherFrac - Frac > 0){
-                this->value = this->value - (other->value << (OtherFrac-Frac));
+            if(OtherFrac > Frac ){
+                this->value = this->value - (other.value / exp2(OtherFrac-Frac));
             }
-            if(Frac - OtherFrac > 0){
-                this->value = this->value - (other->value >> (OtherFrac-Frac));
+            if(Frac > OtherFrac ){
+                this->value = this->value - (other.value * exp2(Frac-OtherFrac));
             }
             return *this;
         }
 
         fixed &operator*=(const fixed &other){
-            this->value = this->value * other->value;
+            this->value = this->value * float(other);
             return *this;
         }
 
         fixed &operator*=(float other){
-            this->value = this->value * fixed<Int,Frac>(other).value;
+            this->value = this->value * float(fixed<Int,Frac>(other));
             return *this;
         }
 
         fixed &operator*=(double other){
-            this->value = this->value * fixed<Int,Frac>(other).value;
+            this->value = this->value * float(fixed<Int,Frac>(other));
             return *this;
         }
 
         template <std::size_t OtherInt, std::size_t OtherFrac>
         fixed &operator*=(const fixed<OtherInt, OtherFrac> &other){
             if(OtherFrac - Frac > 0){
-                this->value = this->value * (other->value << (OtherFrac-Frac));
+                this->value = this->value * (other.value / exp2(OtherFrac));
             }
             if(Frac - OtherFrac > 0){
-                this->value = this->value * (other->value >> (OtherFrac-Frac));
+                this->value = this->value * (other.value / exp2(OtherFrac));
             }
             return *this;
         }
 
         fixed &operator/=(const fixed &other){
-            this->value = this->value / other->value;
+            this->value = this->value / float(other);
             return *this;
         }
 
         fixed &operator/=(float other){
-            this->value = this->value / fixed<Int , Frac>(other).value;
+            this->value = this->value / float(fixed<Int , Frac>(other));
             return *this;
         }
 
         fixed &operator/=(double other){
-            this->value = this->value / fixed<Int , Frac>(other).value;
+            this->value = this->value / float(fixed<Int , Frac>(other));
             return *this;
         }
 
         template <std::size_t OtherInt, std::size_t OtherFrac>
         fixed &operator/=(const fixed<OtherInt, OtherFrac> &other){
-            if(OtherFrac - Frac > 0){
-                this->value = this->value / (other->value << (OtherFrac-Frac));
+            if(OtherFrac > Frac ){
+                this->value = this->value / (other.value / exp2(OtherFrac));
             }
-            if(Frac - OtherFrac > 0){
-                this->value = this->value / (other->value >> (OtherFrac-Frac));
+            if(Frac > OtherFrac){
+                this->value = this->value / (other.value / exp2(OtherFrac));
             }
             return *this;
         }
@@ -224,28 +225,28 @@ namespace fp {
     template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
     double operator+(fixed<I1, F1> lhs, fixed<I2, F2> rhs){
         double res=0;
-        res=lhs.value/(pow(2,lhs.fractional_part)) + rhs.value/(pow(2,rhs.fractional_part));
+        res=lhs.value/(exp2(lhs.fractional_part)) + rhs.value/(exp2(rhs.fractional_part));
         return res;
     }
 
     template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
     double operator-(fixed<I1, F1> lhs, fixed<I2, F2> rhs){
         double res=0;
-        res=lhs.value/(pow(2,lhs.fractional_part)) - rhs.value/(pow(2,rhs.fractional_part));
+        res=lhs.value/(exp2(lhs.fractional_part)) - rhs.value/(exp2(rhs.fractional_part));
         return res;
     }
 
     template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
     double operator*(fixed<I1, F1> lhs, fixed<I2, F2> rhs){
         double res=0;
-        res=lhs.value/(pow(2,lhs.fractional_part)) * rhs.value/(pow(2,rhs.fractional_part));
+        res=lhs.value/(exp2(lhs.fractional_part)) * rhs.value/(exp2(rhs.fractional_part));
         return res;
     }
 
     template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
     double operator/(fixed<I1, F1> lhs, fixed<I2, F2> rhs){
         double res=0;
-        res=lhs.value/(pow(2,lhs.fractional_part)) / rhs.value/(pow(2,rhs.fractional_part));
+        res=(lhs.value/(exp2(lhs.fractional_part))) / (rhs.value/(exp2(rhs.fractional_part)));
         return res;
     }
 
@@ -254,27 +255,32 @@ namespace fp {
 */
     template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
     bool operator==(fixed<I1, F1> lhs, fixed<I2, F2> rhs){
-        return lhs.value/(pow(2,lhs.fractional_part)) == rhs.value/(pow(2,rhs.fractional_part));
+        return lhs.value/(exp2(lhs.fractional_part)) == rhs.value/(exp2(rhs.fractional_part));
+    }
+
+    template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
+    bool operator!=(fixed<I1, F1> lhs, fixed<I2, F2> rhs){
+        return lhs.value/(exp2(lhs.fractional_part)) != rhs.value/(exp2(rhs.fractional_part));
     }
 
     template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
     bool operator<(fixed<I1, F1> lhs, fixed<I2, F2> rhs){
-        return lhs.value/(pow(2,lhs.fractional_part)) < rhs.value/(pow(2,rhs.fractional_part));
+        return lhs.value/(exp2(lhs.fractional_part)) < rhs.value/(exp2(rhs.fractional_part));
     }
 
     template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
     bool operator>(fixed<I1, F1> lhs, fixed<I2, F2> rhs){
-        return lhs.value/(pow(2,lhs.fractional_part)) > rhs.value/(pow(2,rhs.fractional_part));
+        return lhs.value/(exp2(lhs.fractional_part)) > rhs.value/(exp2(rhs.fractional_part));
     }
 
     template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
     bool operator<=(fixed<I1, F1> lhs, fixed<I2, F2> rhs){
-        return lhs.value/(pow(2,lhs.fractional_part)) <= rhs.value/(pow(2,rhs.fractional_part));
+        return lhs.value/(exp2(lhs.fractional_part)) <= rhs.value/(exp2(rhs.fractional_part));
     }
 
     template <std::size_t I1, std::size_t F1, std::size_t I2, std::size_t F2>
     bool operator>=(fixed<I1, F1> lhs, fixed<I2, F2> rhs){
-        return lhs.value/(pow(2,lhs.fractional_part)) >= rhs.value/(pow(2,rhs.fractional_part));
+        return lhs.value/(exp2(lhs.fractional_part)) >= rhs.value/(exp2(rhs.fractional_part));
     }
 /*
 * types
@@ -336,7 +342,7 @@ namespace fp {
 
     template<typename Fixed>
     std::string to_string(Fixed f){
-        return std::to_string(f->value/(pow(2,f->fractional)));
+        return std::to_string(f->value/(exp2(f->fractional)));
     }
 
     template<typename Fixed>
