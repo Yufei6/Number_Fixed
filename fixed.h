@@ -340,13 +340,13 @@ namespace fp {
         return f;
     }
 
-    template<typename Fixed>
-    std::string to_string(Fixed f){
-        return std::to_string(f->value/(exp2(f->fractional)));
+    template <std::size_t I, std::size_t F> 
+    std::string to_string(fixed<I,F> f){
+        return "<"+std::to_string(I)+","+std::to_string(F)+"> "+std::to_string(float(f));
     }
 
-    template<typename Fixed>
-    std::ostream &operator<<(std::ostream &os, Fixed f){
+    template <std::size_t I, std::size_t F>
+    std::ostream& operator<<(std::ostream& os, fixed<I,F> f){
         os << f.to_string(f);
     }
 }
